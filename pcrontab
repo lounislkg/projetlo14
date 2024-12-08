@@ -37,6 +37,7 @@ if [ "$option" = "-l" ]; then
         exit 3
     else
         cat $file
+        echo "$(date): The pcrontab file : $file was viewed by $user" >> /var/log/pcron
         exit 0
     fi
 fi
@@ -55,6 +56,7 @@ if [ "$option" = "-r" ]; then
         exit 4
     fi
     sudo rm $file
+    echo "$(date): The pcrontab file : $file was removed by $user" >> /var/log/pcron
     exit 0
 fi
 
@@ -71,6 +73,7 @@ if [ "$option" = "-e" ]; then
         sudo mv /tmp/pcrontab$user $file
         sudo rm /tmp/pcrontab$user
     fi
+    echo "$(date): The pcrontab file : $file was edited by $user" >> /var/log/pcron
     exit 0
 fi
 
