@@ -11,6 +11,12 @@
 #    exit 1
 #fi
 
+# # Check if the pcron permissions are set
+# $(dirname "$0")/check_pcron_permissions.sh "$@"
+# if [ $? -ne 0 ]; then
+#     exit 1
+# fi
+
 # Parse the command line arguments
 if [ "$1" = "-u" ]; then
     user=$2
