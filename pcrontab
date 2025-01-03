@@ -11,11 +11,11 @@
 #    exit 1
 #fi
 
-# # Check if the pcron permissions are set
-# $(dirname "$0")/check_pcron_permissions.sh "$@"
-# if [ $? -ne 0 ]; then
-#     exit 1
-# fi
+# Check if the pcron permissions are set
+$(dirname "$0")/check_pcron_permissions.sh "$@"
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 
 # Parse the command line arguments
 if [ "$1" = "-u" ]; then
@@ -43,6 +43,7 @@ if [ "$option" = "-l" ]; then
         exit 3
     else
         cat $file
+        echo "$(date): The pcrontab file : $file was viewed by $user" >> /var/log/pcron
         exit 0
     fi
 fi
@@ -61,6 +62,7 @@ if [ "$option" = "-r" ]; then
         exit 4
     fi
     sudo rm $file
+    echo "$(date): The pcrontab file : $file was removed by $user" >> /var/log/pcron
     exit 0
 fi
 
@@ -77,6 +79,7 @@ if [ "$option" = "-e" ]; then
         sudo mv /tmp/pcrontab$user $file
         sudo rm /tmp/pcrontab$user
     fi
+    echo "$(date): The pcrontab file : $file was edited by $user" >> /var/log/pcron
     exit 0
 fi
 
