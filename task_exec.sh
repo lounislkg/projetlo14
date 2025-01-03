@@ -6,7 +6,7 @@ source ./modules/parser.sh
 if [ ! -f /var/log/pcron ]; then
     touch /var/log/pcron
     #limit access to root
-    chmod 600 /var/log/pcron
+    chmod 770 /var/log/pcron
 fi
 
 #fonction pour récuperer les fichiers dans /etc/pcron

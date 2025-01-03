@@ -1,0 +1,12 @@
+[Unit]
+Description=programmateur de tache similaire a cron
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pcron/task_exec.sh
+Restart=on-failure
+WorkingDirectory=/usr/bin/pcron
+
+[Install]
+WantedBy=multi-user.target
