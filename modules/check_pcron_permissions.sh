@@ -28,11 +28,6 @@ while IFS=: read -r user _; do
     fi
 done
 
-if grep -q "^$user$" /etc/pcron.deny; then
-    echo "User $user is explicitly denied access to pcron."
-    exit 1
-fi
-
 if groups "$user" | grep -q "\broot\b"; then
     if grep -q "^$user$" /etc/pcron.deny; then
         echo "User $user is in root group but explicitly denied access to pcron."
@@ -45,5 +40,10 @@ elif grep -q "^$user$" /etc/pcron.allow; then
     pcron "$@"
 else
     echo "User $user is not allowed to use pcron."
+    exit 1
+fi
+
+if grep -q "^$user$" /etc/pcron.deny; then
+    echo "User $user is explicitly denied access to pcron."
     exit 1
 fi
