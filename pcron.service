@@ -4,9 +4,10 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/pcron/task_exec.sh
+ExecStart=/var/lib/pcron/task_exec.sh
 Restart=on-failure
-WorkingDirectory=/usr/bin/pcron
+RestartSec=2s
+WorkingDirectory=/etc/pcron
 
 [Install]
 WantedBy=multi-user.target

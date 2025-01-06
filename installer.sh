@@ -1,3 +1,6 @@
+#!/bin/bash
+
+
 #check if the script has root permissions
 if [ "$(id -u)" -ne 0 ]; then
     echo "This script must be run as root" 1>&2
@@ -7,31 +10,32 @@ fi
 #chek if the directory /etc/pcron/ exists
 if [ ! -d "/etc/pcron" ]; then
     mkdir "/etc/pcron"
-    chmod 770 "/etc/pcron"
+    chmod 771 "/etc/pcron"
 fi
 
-#create the directory /usr/bin/pcron/
-if [ ! -d "/use/bin/pcron" ]; then
-    mkdir "/usr/bin/pcron"
-    chmod 770 "/usr/bin/pcron"
+#create the directory /var/lib/pcron/
+if [ ! -d "/var/lib/pcron" ]; then
+    mkdir "/var/lib/pcron"
+    chmod 775 "/var/lib/pcron"
 fi
 
-#create the directory /usr/bin/pcron/modules
-if [ ! -d "/use/bin/pcron/modules" ]; then
-    mkdir "/usr/bin/pcron/modules"
-    chmod 770 "/usr/bin/pcron/modules"
+#create the directory /etc/pcron/modules
+if [ ! -d "/var/lib/pcron/modules" ]; then
+    mkdir "/var/lib/pcron/modules"
+    chmod 775 "/var/lib/pcron/modules"
 fi
+
 
 #check if the files /etc/pcron.allow and /etc/pcron.deny exist
 if [ ! -f "/etc/pcron/pcron.allow" ]; then
-    touch "/etc/pcron/pcron.allow"
-    chmod 770 "/etc/pcron/pcron.allow"
-    echo "root" > "/etc/pcron/pcron.allow"
+    touch "/etc/pcron.allow"
+    chmod 774 "/etc/pcron.allow"
+    echo "root" > "/etc/pcron.allow"
 fi 
 
-if [ ! -f "/etc/pcron/pcron.deny" ]; then
-    touch "/etc/pcron/pcron.deny"
-    chmod 770 "/etc/pcron/pcron.deny"
+if [ ! -f "/etc/pcron.deny" ]; then
+    touch "/etc/pcron.deny"
+    chmod 774 "/etc/pcron.deny"
 fi
 
 #check if the file /var/log/pcron exists
@@ -42,23 +46,29 @@ fi
 
 
 #ajouter les scripts de pcron
-cp ./pcrontab /usr/bin/pcron
+cp ./pcrontab /var/lib/pcron/
+chmod 775 /var/lib/pcron/pcrontab
+chown root:root /var/lib/pcron/pcrontab
 
 #ajouter le script task_exec.sh
-cp ./task_exec.sh /usr/bin/pcron
-chown root:root /usr/bin/pcron/task_exec.sh
-chmod 700 /usr/bin/pcron/task_exec.sh
+cp ./task_exec.sh /var/lib/pcron
+chown root:root /var/lib/pcron/task_exec.sh
+chmod 771 /var/lib/pcron/task_exec.sh
  
 for file in ./modules/*; do
-    # echo $file
-    cp $file /usr/bin/pcron/modules/
-    chown root:root /usr/bin/pcron/modules/$file
-    chmod 700 /usr/bin/pcron/modules/$file
+    cp $file /var/lib/pcron/modules/
+    file_basename=$(basename $file)
+    chown root:root /var/lib/pcron/modules/$file_basename
+    chmod 775 /var/lib/pcron/modules/$file_basename
 done
 
 
 #ajouter un service pour pcron
 cp ./pcron.service /etc/systemd/system/pcron.service
+
+#créer un lien de pcron dans /usr/bin
+ln -s /var/lib/pcron/pcrontab /usr/bin/pcrontab
+
 
 systemctl daemon-reload
 systemctl enable pcron

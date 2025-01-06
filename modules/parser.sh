@@ -132,7 +132,6 @@ temporal_parser() {
         fi
         final_list+=" $num"
     done
-    echo "final list : " $final_list
 }
 
 make_list() {
@@ -183,6 +182,3 @@ make_list() {
         values_kept+="$arg"
     fi
 }
-
-
-

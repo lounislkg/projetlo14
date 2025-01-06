@@ -5,16 +5,13 @@
 # -r remove the pcrontab of the specified user
 # -e edit the pcrontab of the specified user
 
-# Check if the user is root
-#if [ $(id -u) -ne 0 ]; then
-#    echo "You must be root to run this script."
-#    exit 1
-#fi
-
-# Check if the pcron permissions are set
-$(dirname "$0")/check_pcron_permissions.sh "$@"
-if [ $? -ne 0 ]; then
-    exit 1
+#if there's no argument passed to the script display the usage
+if [ $# -eq 0 ]; then
+    echo "Usage: pcrontab [-u user] {-l | -r | -e}"
+    echo "-l display the pcrontab of the specified user"
+    echo "-r remove the pcrontab of the specified user"
+    echo "-e edit the pcrontab of the specified user"
+    exit 0
 fi
 
 # Parse the command line arguments
@@ -24,6 +21,21 @@ if [ "$1" = "-u" ]; then
 else
     user=$(whoami)
     option=$1
+fi
+
+/var/lib/pcron/modules/permission.sh $user
+status=$?
+# Check if the pcron permissions are set
+if [ $status -eq 1 ]; then
+    echo "The user does not have the required permissions."
+    exit 1
+elif [ $status -eq 2 ]; then
+    echo "The user permissions are not set. Contact your administrator."
+    exit 1
+fi
+if [ $status -ne 0 ]; then
+    echo "error status not handled: $status"
+    exit 1
 fi
 
 # Check if the user exists
@@ -40,10 +52,10 @@ file=/etc/pcron/pcrontab$user
 if [ "$option" = "-l" ]; then
     if [ ! -e $file ]; then
         echo "The pcrontab file does not exist."
-        exit 3
+        exit 0
     else
         cat $file
-        echo "$(date): The pcrontab file : $file was viewed by $user" >> /var/log/pcron
+        echo "$(date): The pcrontab file : $file was viewed by $user" | sudo tee -a /var/log/pcron > /dev/null
         exit 0
     fi
 fi
@@ -62,7 +74,7 @@ if [ "$option" = "-r" ]; then
         exit 4
     fi
     sudo rm $file
-    echo "$(date): The pcrontab file : $file was removed by $user" >> /var/log/pcron
+    echo "$(date): The pcrontab file : $file was removed by $user" | sudo tee -a /var/log/pcron > /dev/null
     exit 0
 fi
 
@@ -70,16 +82,19 @@ fi
 if [ "$option" = "-e" ]; then
     if [ -e $file ]; then
         sudo cp $file /tmp/pcrontab$user
-        chmod 600 /tmp/pcrontab$user
-
+        sudo chmod 777 /tmp/pcrontab$user
+    fi
     vi /tmp/pcrontab$user
     #on save move the file to the correct location
     if [ -e /tmp/pcrontab$user ]; then
-        
+        if [ -e $file ]; then
+            sudo rm $file
+        fi
         sudo mv /tmp/pcrontab$user $file
-        sudo rm /tmp/pcrontab$user
+        sudo chown $user:$user $file
+        sudo chmod 600 $file
     fi
-    echo "$(date): The pcrontab file : $file was edited by $user" >> /var/log/pcron
+    echo "$(date): The pcrontab file : $file was edited by $user" | sudo tee -a /var/log/pcron > /dev/null
     exit 0
 fi
 

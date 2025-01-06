@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./modules/parser.sh
+source /var/lib/pcron/modules/parser.sh
 
 #verifier que le fichier de log existe
 if [ ! -f /var/log/pcron ]; then
@@ -12,6 +12,7 @@ fi
 #fonction pour récuperer les fichiers dans /etc/pcron
 function get_files {
     files=()
+    
     for file in /etc/pcron/pcrontab*; do
         if [[ ! " ${files[@]} " =~ " ${file} " ]]; then
             files+=("$file")
@@ -33,9 +34,9 @@ while true; do
                 parser "$line"
                 if [ "$is_task_to_execute" = true ]; then
                     echo $task_to_execute
-                    echo "This task : $task_to_execute was executed at $(date) by $(echo $file | sed 's/\/etc\/pcron\/pcrontab//')" >> /var/log/pcron
+                    echo "This task : $task_to_execute was executed at $(date) by $(basename $file)" >> /var/log/pcron
                     res=$(eval $task_to_execute)
-                    echo "Pcron : $res"
+                    echo "Pcron : $res"   
                     echo "Result : $res" >> /var/log/pcron
                 fi
                 
