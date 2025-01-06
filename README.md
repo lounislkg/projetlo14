@@ -7,7 +7,7 @@ Projet scolaire visant a refaire un programmateur de tache qui ressemble à cron
 
   
 
-Use `pcrontab -e` to open your personnal file tp set up tasks.
+Use `pcrontab -e` to open your personnal file to set up tasks.
 
 View them with `pcrontab -l`.
 
