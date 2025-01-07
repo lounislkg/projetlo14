@@ -1,19 +1,19 @@
-#parse les lignes des fichier contenants les taches a éxécuter
+# Description: This file contains the functions used to parse the pcrontab file
 parser() {
     task_to_execute=""
-    #split the seven fields using the space delimiter
+    # Split the seven fields using the space delimiter
     IFS=' ' read -a fields <<< "$1"
 
-    #check if the line is a comment
+    # Check if the line is a comment
     if [[ ${fields[0]} == \#* ]]; then
         return
     fi
-    #check if the line is empty
+    # Check if the line is empty
     if [[ ${fields[0]} == "" ]]; then
         return
     fi
     is_task_to_execute=false
-    # Obtenir l'heure actuelle
+    # Get the current time
     sec=$(date +"%-S")
     CURRENT_SEC=$((sec / 15))
     CURRENT_MIN=$(date +"%-M")
@@ -21,7 +21,7 @@ parser() {
     CURRENT_DAY=$(date +"%-d")
     CURRENT_MONTH=$(date +"%-m")
     CURRENT_WDAY=$(date +"%-w")
-    #check if the task is to be executed
+    # Check if the task is to be executed
     sec_satisfied=false
     min_satisfied=false
     hour_satisfied=false
@@ -151,12 +151,12 @@ make_list() {
         echo "(make list) : This arg is not valid : $arg"
         exit 1
     fi
-    #if arg contains both : and - don't split
+    # If arg contains both : and - don't split
     if [[ $arg == *":"* && $arg == *"-"* ]]; then
         echo "(make list) This arg is not valid : $arg it should contain either : or - not both"
         exit 1
     fi
-    #verifier si arg contient le caractère : pour le split
+    # If arg contains : split using :
     if [[ $arg == *":"* ]]; then
         IFS=':' read -a nums <<< "$arg"
         for field in "${nums[@]}"; do

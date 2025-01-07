@@ -1,32 +1,32 @@
 #!/bin/bash
 
 
-#check if the script has root permissions
+# Check if the script has root permissions
 if [ "$(id -u)" -ne 0 ]; then
     echo "This script must be run as root" 1>&2
     exit 1
 fi
 
-#chek if the directory /etc/pcron/ exists
+# Chek if the directory /etc/pcron/ exists
 if [ ! -d "/etc/pcron" ]; then
     mkdir "/etc/pcron"
     chmod 1777 "/etc/pcron"
 fi
 
-#create the directory /var/lib/pcron/
+# Create the directory /var/lib/pcron/
 if [ ! -d "/var/lib/pcron" ]; then
     mkdir "/var/lib/pcron"
     chmod 751 "/var/lib/pcron"
 fi
 
-#create the directory /etc/pcron/modules
+# Create the directory /etc/pcron/modules
 if [ ! -d "/var/lib/pcron/modules" ]; then
     mkdir "/var/lib/pcron/modules"
     chmod 751 "/var/lib/pcron/modules"
 fi
 
 
-#check if the files /etc/pcron.allow and /etc/pcron.deny exist
+# Check if the files /etc/pcron.allow and /etc/pcron.deny exist
 if [ ! -f "/etc/pcron/pcron.allow" ]; then
     touch "/etc/pcron.allow"
     chmod 755 "/etc/pcron.allow"
@@ -38,7 +38,7 @@ if [ ! -f "/etc/pcron.deny" ]; then
     chmod 755 "/etc/pcron.deny"
 fi
 
-#check if the file /var/log/pcron exists
+# Check if the file /var/log/pcron exists
 if [ ! -f "/var/log/pcron" ]; then
     touch "/var/log/pcron"
     chmod 750 "/var/log/pcron"

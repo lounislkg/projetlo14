@@ -5,7 +5,7 @@
 # -r remove the pcrontab of the specified user
 # -e edit the pcrontab of the specified user
 
-#if there's no argument passed to the script display the usage
+# If there's no argument passed to the script display the usage
 if [ $# -eq 0 ]; then
     echo "Usage: pcrontab [-u user] {-l | -r | -e}"
     echo "-l display the pcrontab of the specified user"
@@ -55,7 +55,6 @@ if [ "$option" = "-l" ]; then
         exit 0
     else
         cat $file
-        # echo "$(date): The pcrontab file : $file was viewed by $user" | sudo tee -a /var/log/pcron > /dev/null
         exit 0
     fi
 fi
@@ -66,7 +65,7 @@ if [ "$option" = "-r" ]; then
         echo "The pcrontab file does not exist."
         exit 3
     fi
-    #Confirmation before removing the file
+    # Confirmation before removing the file
     echo "Are you sure you want to remove the pcrontab file? (y/n)"
     read answer
     if [ "$answer" != "y" ]; then
@@ -74,28 +73,13 @@ if [ "$option" = "-r" ]; then
         exit 4
     fi
     rm $file
-    # echo "$(date): The pcrontab file : $file was removed by $user" | sudo tee -a /var/log/pcron > /dev/null
     exit 0
 fi
 
 # Edit the pcrontab
 if [ "$option" = "-e" ]; then
-    # if [ -e $file ]; then
-    #     cp $file /tmp/pcrontab$user
-    #     chmod 777 /tmp/pcrontab$user
-    # fi
     vi /etc/pcron/pcrontab$user
     chmod 600 /etc/pcron/pcrontab$user
-    # #on save move the file to the correct location
-    # if [ -e /tmp/pcrontab$user ]; then
-    #     if [ -e $file ]; then
-    #         rm $file
-    #     fi
-    #     mv /tmp/pcrontab$user $file
-    #     chown $user:$user $file
-    #     chmod 600 $file
-    # fi
-    # echo "$(date): The pcrontab file : $file was edited by $user" | sudo tee -a /var/log/pcron > /dev/null
     exit 0
 fi
 
